@@ -1,7 +1,15 @@
 using InterfaceFunctions
-using Documenter
+using Documenter, DocumenterInterLinks
 
-DocMeta.setdocmeta!(InterfaceFunctions, :DocTestSetup, :(using InterfaceFunctions); recursive=true)
+
+DocMeta.setdocmeta!(InterfaceFunctions, :DocTestSetup, :(
+        include(joinpath(@__DIR__, "../test", "doctestsetup.jl"))
+    ); recursive=true)
+
+links = InterLinks(
+    "Julia" => "https://docs.julialang.org/en/v1/",
+    "MacroTools" => "https://fluxml.ai/MacroTools.jl/dev/"
+)
 
 makedocs(;
     modules=[InterfaceFunctions],
@@ -15,6 +23,8 @@ makedocs(;
     pages=[
         "Home" => "index.md",
     ],
+    plugins=[links],
+    doctest=false # tests run in `test/runtests.jl`
 )
 
 deploydocs(;
