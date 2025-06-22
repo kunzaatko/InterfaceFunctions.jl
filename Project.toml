@@ -1,0 +1,7 @@
+name = "InterfaceFunctions"
+uuid = "9f9138d1-22ea-4a5b-8917-3b6286796293"
+authors = ["Martin Kunz <martinkunz@email.cz> and contributors"]
+version = "0.1.0"
+
+[compat]
+julia = "1.10"
