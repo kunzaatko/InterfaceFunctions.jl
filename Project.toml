@@ -1,7 +1,11 @@
 name = "InterfaceFunctions"
 uuid = "9f9138d1-22ea-4a5b-8917-3b6286796293"
-authors = ["Martin Kunz <martinkunz@email.cz> and contributors"]
 version = "0.1.0"
+authors = ["Martin Kunz <martinkunz@email.cz> and contributors"]
+
+[deps]
+MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 
 [compat]
+MacroTools = "0.5.16"
 julia = "1.10"
