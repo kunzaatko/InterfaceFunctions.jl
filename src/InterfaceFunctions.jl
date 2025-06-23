@@ -1,5 +1,4 @@
 module InterfaceFunctions
-
 using MacroTools
 
 # NOTE: `@interface` uses covered
@@ -63,9 +62,7 @@ can use the interfaces defined on these types to provide implementations for the
 """
 macro interface(ex)
     func = nothing
-    fdict = Dict{Symbol,Any}(
-        (t => nothing for t in (:name,  :rtype, :body))...
-    )
+    fdict = Dict{Symbol,Any}((t => nothing for t in (:name, :rtype, :body))...)
     fdict[:kwargs], fdict[:params], fdict[:args] = [], [], []
     fcall = if isexpr(ex, :function)
         @capture(longdef(ex), function (fcall_ | fcall_)
@@ -122,18 +119,34 @@ macro interface(ex)
         ),
     )
     @capture(first(fdict[:args]), (t_::T_ | ::T_))
-    isabstracttype(@eval(@__MODULE__, $T)) || throw(
-        ArgumentError(lazy"In `@interface`, the interfacing type `$T` must be abstract."),
-    )
     if t === nothing
         t = Symbol(lowercase(first(string(T))))
         fdict[:args][1] = :($t::$T)
     end
 
     signature = string(fcall)
-    fdict[:body] = :(return throw($UnimplementedInterface{$T, typeof($t)}($signature)))
+    fdict[:body] = :(return throw($UnimplementedInterface{$T,typeof($t)}($signature)))
 
-    return esc(combinedef(fdict))
+    interface_expr = combinedef(fdict)
+    return Expr(
+        :block,
+        esc(
+            quote
+                isabstracttype($T) || throw(
+                    ArgumentError(
+                        "In `@interface`, the interfacing type " *
+                        string(nameof($T)) *
+                        " must be abstract.",
+                    ),
+                )
+            end,
+        ),
+        esc(
+            quote
+                Core.@__doc__ $interface_expr
+            end,
+        ),
+    )
 end
 
 export @interface

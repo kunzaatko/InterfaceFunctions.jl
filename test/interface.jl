@@ -1,5 +1,5 @@
 using InterfaceFunctions: InterfaceFunctions as IF
-using MacroTools
+using MacroTools, Markdown
 
 @interface i1(a::Real, b::Float64)
 @test length(methods(i1)) == 1
@@ -30,27 +30,27 @@ using MacroTools
 
 @interface i6(a::Real, b; kwargs...)
 @test length(methods(i6)) == 1
-@test_throws IF.UnimplementedInterface{Real} i6(4,4)
-@test_throws IF.UnimplementedInterface{Real} i6(4,4;kw1=1,kw2=1)
-@test_throws IF.UnimplementedInterface{Real} i6(4,:A)
+@test_throws IF.UnimplementedInterface{Real} i6(4, 4)
+@test_throws IF.UnimplementedInterface{Real} i6(4, 4; kw1=1, kw2=1)
+@test_throws IF.UnimplementedInterface{Real} i6(4, :A)
 
 @interface i7(a::Real, args...; kwargs...)
 @test length(methods(i7)) == 1
 @test_throws IF.UnimplementedInterface{Real} i7(5.0)
-@test_throws IF.UnimplementedInterface{Real} i7(5,3,2,1;kw1=1,kw2=1)
+@test_throws IF.UnimplementedInterface{Real} i7(5, 3, 2, 1; kw1=1, kw2=1)
 
 @interface i8(::Real)
 @test length(methods(i8)) == 1
-@test_throws IF.UnimplementedInterface{Real} i8(5.0) 
+@test_throws IF.UnimplementedInterface{Real} i8(5.0)
 
 @test_broken @expand @interface function i8(a::Real, b::Float64) end
 
-struct I9{T} end 
+struct I9{T} end
 @interface I9{Float64}(a::Real)
 @test length(methods(I9{Float64}, [Real])) == 1
 @test_throws IF.UnimplementedInterface{Real} I9{Float64}(5.0)
 
-struct I10{T} end 
+struct I10{T} end
 @interface I10{Float64}(a::Real; kwargs...)
 @test length(methods(I10{Float64}, [Real])) == 1
 @test_throws IF.UnimplementedInterface{Real} I10{Float64}(5.0)
@@ -78,9 +78,11 @@ struct I14{T} end
 @interface i15(a::Real, b::Float64)
 @test_throws ["UnimplementedInterface{Real}:", "`i15(a::Real, b::Float64)`"] i15(4.0, 1.0)
 
-@test_throws ["ArgumentError:", "abstract"] @expand @interface i(a::Float64) # Concrete type
+@test_throws ["ArgumentError:", "abstract"] @interface i(a::Float64) # Concrete type
 @test_throws ["ArgumentError:", "known type"] @expand @interface i(a) # Missing type
 @test_throws ["ArgumentError:", "atleast one argument"] @expand @interface i() # No arguments
 @test_throws ["ArgumentError:", "atleast one argument"] @expand @interface A{Float64}()
 
-# TODO: Test: Documentation for interfaces <23-06-25> 
+"i16 documentation"
+@interface i16(a::Real, b::Float64)
+@test Markdown.plain(@doc(i16)) == "i16 documentation\n"
