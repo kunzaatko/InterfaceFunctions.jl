@@ -33,12 +33,12 @@ struct UnimplementedInterface{T} <: Exception
     function_dict::Dict{Symbol,Any}
 end
 function Base.showerror(io::IO, err::UnimplementedInterface{T}) where {T}
-    kwargs, name, args, whereparams, rtype = err.function_dict[:kwargs],
+    kwargs, name, args, whereparams, rtype, params = err.function_dict[:kwargs],
     err.function_dict[:name], err.function_dict[:args], err.function_dict[:whereparams],
-    err.function_dict[:rtype]
+    err.function_dict[:rtype], err.function_dict[:params]
     return print(
         io,
-        "UnimplementedInterface{$(nameof(T))}: `$(nameof(typeof(err.t)))` does not implement the obligatory interface `$name($(join(args, ", "))$(length(kwargs) > 0 ? "; " : "")$(join(kwargs, ", ")))$(rtype !== nothing ? "::$rtype" : "")$(length(whereparams) > 0 ? " where {$(join(whereparams, ", "))}" : "")`",
+        "UnimplementedInterface{$(nameof(T))}: `$(nameof(typeof(err.t)))` does not implement the obligatory interface `$name$(length(params) > 0 ? "{$(join(params, ", "))}" : "")($(join(args, ", "))$(length(kwargs) > 0 ? "; " : "")$(join(kwargs, ", ")))$(rtype !== nothing ? "::$rtype" : "")$(length(whereparams) > 0 ? " where {$(join(map(p -> replace(string(p), " " => ""), whereparams), ","))}" : "")`",
     )
 end
 
@@ -68,9 +68,9 @@ can use the interfaces defined on these types to provide implementations for the
 macro interface(ex)
     func = nothing
     fdict = Dict{Symbol,Any}(
-        (t => nothing for t in (:name, :args, :rtype, :whereparams, :body))...
+        (t => nothing for t in (:name,  :rtype, :body))...
     )
-    fdict[:kwargs] = []
+    fdict[:kwargs], fdict[:params], fdict[:args] = [], [], []
     fcall = if isexpr(ex, :function)
         @capture(longdef(ex), function (fcall_ | fcall_)
             return body_
