@@ -38,7 +38,7 @@ function Base.showerror(io::IO, err::UnimplementedInterface{T}) where {T}
     err.function_dict[:rtype], err.function_dict[:params]
     return print(
         io,
-        "UnimplementedInterface{$(nameof(T))}: `$(nameof(typeof(err.t)))` does not implement the obligatory interface `$name$(length(params) > 0 ? "{$(join(params, ", "))}" : "")($(join(args, ", "))$(length(kwargs) > 0 ? "; " : "")$(join(kwargs, ", ")))$(rtype !== nothing ? "::$rtype" : "")$(length(whereparams) > 0 ? " where {$(join(map(p -> replace(string(p), " " => ""), whereparams), ","))}" : "")`",
+        "UnimplementedInterface{$(nameof(T))}: `$(nameof(typeof(err.t)))` does not implement the obligatory interface `$(isexpr(name, :(::)) ? "($(name)" : name)$(length(params) > 0 ? "{$(join(params, ", "))}" : "")$(isexpr(name, :(::)) ? ")" : "")($(join(args, ", "))$(length(kwargs) > 0 ? "; " : "")$(join(kwargs, ", ")))$(rtype !== nothing ? "::$rtype" : "")$(length(whereparams) > 0 ? " where {$(join(map(p -> replace(string(p), " " => ""), whereparams), ","))}" : "")`",
     )
 end
 
