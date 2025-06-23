@@ -64,4 +64,8 @@ end
         doctest(InterfaceFunctions; fix=ifelse(haskey(ENV, "FIX_DOCTESTS"), true, false))
     end
 
+    @cond_testset "interface" begin
+        include("interface.jl")
+    end
+
 end
