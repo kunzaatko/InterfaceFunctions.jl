@@ -140,7 +140,7 @@ macro interface(ex)
         ),
     )
     @capture(first(fdict[:args]), (t_::T_ | ::T_))
-    isabstracttype(eval(T)) || throw(
+    isabstracttype(@eval(@__MODULE__, $T)) || throw(
         ArgumentError(lazy"In `@interface`, the interfacing type `$T` must be abstract."),
     )
     if t === nothing
@@ -150,7 +150,7 @@ macro interface(ex)
 
     fdict[:body] = :(return throw($UnimplementedInterface{$T}($(t), $(fdict))))
 
-    return combinedef(fdict)
+    return esc(combinedef(fdict))
 end
 
 export @interface
