@@ -28,17 +28,13 @@ end
     UnimplementedInterface <: Exception 
 Thrown when a subtype does not implement an obligatory interface.
 """
-struct UnimplementedInterface{T} <: Exception
-    t::T
-    function_dict::Dict{Symbol,Any}
+struct UnimplementedInterface{T,X} <: Exception
+    signature::String
 end
-function Base.showerror(io::IO, err::UnimplementedInterface{T}) where {T}
-    kwargs, name, args, whereparams, rtype, params = err.function_dict[:kwargs],
-    err.function_dict[:name], err.function_dict[:args], err.function_dict[:whereparams],
-    err.function_dict[:rtype], err.function_dict[:params]
+function Base.showerror(io::IO, err::UnimplementedInterface{T,X}) where {T,X}
     return print(
         io,
-        "UnimplementedInterface{$(nameof(T))}: `$(nameof(typeof(err.t)))` does not implement the obligatory interface `$(isexpr(name, :(::)) ? "($(name)" : name)$(length(params) > 0 ? "{$(join(params, ", "))}" : "")$(isexpr(name, :(::)) ? ")" : "")($(join(args, ", "))$(length(kwargs) > 0 ? "; " : "")$(join(kwargs, ", ")))$(rtype !== nothing ? "::$rtype" : "")$(length(whereparams) > 0 ? " where {$(join(map(p -> replace(string(p), " " => ""), whereparams), ","))}" : "")`",
+        "UnimplementedInterface{$(nameof(T))}: `$(nameof(X))` does not implement the obligatory interface `$(err.signature)`",
     )
 end
 
@@ -148,7 +144,8 @@ macro interface(ex)
         fdict[:args][1] = :($t::$T)
     end
 
-    fdict[:body] = :(return throw($UnimplementedInterface{$T}($(t), $(fdict))))
+    signature = string(fcall)
+    fdict[:body] = :(return throw($UnimplementedInterface{$T, typeof($t)}($signature)))
 
     return esc(combinedef(fdict))
 end
