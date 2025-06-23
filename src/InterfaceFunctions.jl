@@ -87,20 +87,6 @@ macro interface(ex)
             (func_(args__)::rtype_)
         )
     )
-    elseif isexpr(fcall_nowhere, :tuple)
-        if length(fcall_nowhere.args) > 0 && isexpr(fcall_nowhere.args[1], :parameters)
-            # Handle both cases: parameters with args and parameters only
-            if length(fcall_nowhere.args) > 1
-                fdict[:args] = fcall_nowhere.args[2:end]
-            else
-                fdict[:args] = []
-            end
-            fdict[:kwargs] = fcall_nowhere.args[1].args
-        else
-            fdict[:args] = fcall_nowhere.args
-        end
-    elseif isexpr(fcall_nowhere, :(::))
-        fdict[:args] = Any[fcall_nowhere]
     else
         throw(
             ArgumentError(
