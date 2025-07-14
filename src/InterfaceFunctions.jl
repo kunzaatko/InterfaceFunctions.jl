@@ -23,21 +23,6 @@ using MacroTools
 # TODO: Add the source of the default interface call to the @debug log message <14-07-25> 
 
 """
-    gatherwheres(ex) 
-Separate the function signature from the `where` statement and return tuple of `(function_call_signature, where_parameters_tuple)`
-
-Taken from [`MacroTools.jl`](@extref)
-"""
-function gatherwheres(ex)
-    if @capture(ex, (f_ where {params1__}))
-        f2, params2 = gatherwheres(f)
-        (f2, (params1..., params2...))
-    else
-        (ex, ())
-    end
-end
-
-"""
     UnimplementedInterface <: Exception 
 Thrown when a subtype does not implement an obligatory interface.
 """
