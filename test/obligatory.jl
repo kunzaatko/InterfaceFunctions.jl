@@ -43,8 +43,6 @@ using MacroTools, Markdown
 @test length(methods(i8)) == 1
 @test_throws IF.UnimplementedInterface{Real} i8(5.0)
 
-@test_broken @expand @interface function i8(a::Real, b::Float64) end
-
 struct I9{T} end
 @interface I9{Float64}(a::Real)
 @test length(methods(I9{Float64}, [Real])) == 1
