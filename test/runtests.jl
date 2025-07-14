@@ -64,8 +64,12 @@ end
         doctest(InterfaceFunctions; fix=ifelse(haskey(ENV, "FIX_DOCTESTS"), true, false))
     end
 
-    @cond_testset "interface" begin
-        include("interface.jl")
+    @cond_testset "obligatory" begin
+        include("obligatory.jl")
+    end
+
+    @cond_testset "optional" begin
+        include("optional.jl")
     end
 
 end
