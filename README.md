@@ -8,9 +8,9 @@
 [![ColPrac: Contributor's Guide on Collaborative Practices for Community Packages](https://img.shields.io/badge/ColPrac-Contributor's%20Guide-blueviolet)](https://github.com/SciML/ColPrac)
 [![Aqua](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/AquaFunctions.jl)
 
-InterfaceFunctions.jl provides a robust and flexible way to define and manage function interfaces of abstract types in
-Julia, supporting both obligatory (necessary to implement by the concrete type creator) and optional (ones that provide
-a default implementation) interfaces with clear error handling and debug logging.
+InterfaceFunctions.jl provides a robust and flexible (although light and very simple) way to define and manage function
+interfaces of abstract types in Julia, supporting both obligatory (necessary to implement by the concrete type creator)
+and optional (ones that provide a default implementation) interfaces with clear error handling and debug logging.
 
 ## Installation
 
@@ -23,27 +23,33 @@ Pkg.add("InterfaceFunctions")
 
 ## Quick Start
 
-Define an obligatory interface:
+There is only a single macro that this package publicly provides: `@interface`.
+
+Defining interfaces can be simply done by preceding a function (optional interface) or a call (obligatory interface)
+by the `@interface` macro:
 
 ```julia
 using InterfaceFunctions
 
-abstract type MyAbstractType end
+abstract type AbstractType end
 
-@interface my_required_function(x::MyAbstractType)
+@interface required_function(x::AbstractType)
 
-struct MyConcreteType <: MyAbstractType end
+struct ConcreteType <: AbstractType end
 
 # This will throw an UnimplementedInterface error
 try
-    my_required_function(MyConcreteType())
+    required_function(ConcreteType())
 catch e
     println(e)
 end
 
 # Implement the interface
-my_required_function(x::MyConcreteType) = "Hello from MyConcreteType!"
-println(my_required_function(MyConcreteType()))
+required_function(x::ConcreteType) = "Hello from ConcreteType!"
+println(required_function(ConcreteType())) # Prints "Hello from ConcreteType!"
+
+@interface optional_function(x::AbstractType) = "Hello from AbstractType!"
+println(optional_function(ConcreteType())) # Prints "Hello from AbstractType!"
 ```
 
 ## Documentation
