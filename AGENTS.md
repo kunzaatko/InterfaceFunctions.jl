@@ -43,6 +43,10 @@ Documentation structure preferences:
   to the point and simple enough for a novice user to understand.
 
 Documentation structure preferences:
-- The `index.md` file should include a short, brief summary of the package's features.
-- The `quickstart.md` section should provide a concise introduction.
-- The `manual.md` section should contain more detailed examples and explanations.
+- The `index.md` file should include a short, brief summary of the package's features as a list.
+- The `quickstart.md` section should provide a concise introduction to enable the user to quickly start using the
+  package main features.
+- The `manual.md` section should contain more detailed examples, explanations and should touch on the philosophy and the
+  reasoning of the package / API structure within the text of the various feature explanations and demonstrations. The
+  math and/or logic behind any calculations and algorithms should be included where necessary. It should however remain
+  to the point and simple enough for a novice user to understand.
