@@ -22,6 +22,8 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
+        "Quick Start" => "quickstart.md",
+        "Manual" => "manual.md",
     ],
     plugins=[links],
     doctest=false # tests run in `test/runtests.jl`
