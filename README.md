@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="./docs/src/assets/logo.png" alt="MakieMaestro.jl Logo: Makie logo that is being worked on by a painter" style="width: 35%">
+    <img src="./docs/src/assets/logo.png" alt="InterfaceFunctions.jl Logo: A puzzle piece in Julia colours" style="width: 35%">
 </p>
 
 # InterfaceFunctions
