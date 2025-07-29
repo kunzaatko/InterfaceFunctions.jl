@@ -60,7 +60,9 @@ documentation](https://kunzaatko.github.io/InterfaceFunctions.jl/dev/).
 
 ## Contributing
 
-Contributions are welcome! Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute to this project.
+All contributions are welcome. For instructions on how to contribute in the correct manner, read the Julia
+[__ColPrac__](https://github.com/SciML/ColPrac) collaboration practices guidelines or create a PR and let the
+maintainers help you out.
 
 ## Citing
 
