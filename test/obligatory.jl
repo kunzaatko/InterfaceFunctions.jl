@@ -84,3 +84,7 @@ struct I14{T} end
 "i16 documentation"
 @interface i16(a::Real, b::Float64)
 @test Markdown.plain(@doc(i16)) == "i16 documentation\n"
+
+@interface i17(a::AbstractArray{N}, b::Real) where {N}
+@test length(methods(i17)) == 1
+@test_throws IF.UnimplementedInterface{AbstractArray} i17([1, 2, 3], 5.0)

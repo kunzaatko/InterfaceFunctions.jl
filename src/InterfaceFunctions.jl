@@ -1,3 +1,7 @@
+# TODO: Allow interfaces for types which are not in the first position <29-07-25> 
+# TODO: Documenter.jl extension to generate an AbstractType tree with the interfaces. It should be a mermaid diagram. It
+# will be used for generating developer documentation. <29-07-25> 
+
 module InterfaceFunctions
 using MacroTools
 
@@ -16,9 +20,6 @@ using MacroTools
 # - `@interface f(t::Type{<:T})`
 # - `@interface f(t::T1, ::Type{<:T2})`
 # - `@interface function f(t::T1) #=default_body=# end`
-
-# TODO: Document the usage of `Logging` on how to enable a debug logger and how to enable logging of the `group
-# = :interfaces` only <14-07-25> 
 
 # TODO: Add the source of the default interface call to the @debug log message <14-07-25> 
 
@@ -113,6 +114,13 @@ macro interface(ex)
 
     interface_arg = MacroTools.splitarg(first(fdict[:args]))
     t, T = interface_arg[[1, 2]]
+    @capture(T, TN_{Ps__} | TN_) # determine the type parameters
+    if !isnothing(Ps)
+        T = quote
+            $T where {$(Ps...)}
+        end
+    end
+
     if interface_arg[1] === nothing
         t = Symbol(lowercase(first(string(T))))
         fdict[:args][1] = :($t::$T)
