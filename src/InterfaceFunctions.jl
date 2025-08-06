@@ -38,6 +38,100 @@ function Base.showerror(io::IO, err::UnimplementedInterface{T,X}) where {T,X}
 end
 
 """
+    param_names(type_exp)
+Determine the names of the type parameters needed for a correct type definition from the type expression.
+
+```jldoctest
+julia> IF.param_names(:(A{B, C{D}}))
+4-element Vector{Any}:
+ :A
+ :B
+ :C
+ :D
+```
+"""
+function param_names(type_exp, params=[])
+    if @capture(type_exp, T_{P__})
+        push!(params, namify(T))
+        for p in P
+            param_names(p, params)
+        end
+    elseif @capture(type_exp, T__)
+        append!(params, namify.(T))
+    else
+        return []
+    end
+    return params
+end
+
+"""
+    where_param_names(where_exps)
+Determine the names of the type parameters for every parameter in `where_exps`
+
+```jldcotest
+julia> IF.where_param_names((:(T <: A{B, N}), :(A <: AbstractArray), :(B <: Real), :(N)))
+Dict{Symbol, Vector{Any}} with 4 entries:
+  :T => [:A, :B, :N]
+  :N => []
+  :A => [:AbstractArray]
+  :B => [:Real]
+```
+"""
+function where_param_names(where_exps)
+    return Dict(map(where_exps) do e
+        if @capture(e, T_ <: V_)
+            namify(T) => param_names(V)
+        elseif @capture(e, T_)
+            namify(T) => []
+        end
+    end...)
+end
+
+"""
+    interfacetype(type_exp, where_exps)
+Determine the exact defined interfacing type from the signature of the function and the type expression of the first
+argument.
+"""
+function interfacetype(type_exp, where_exps)
+    interface_param_names = param_names(type_exp)
+    where_param_names_dict = where_param_names(where_exps)
+    interface_whereparams_names = []
+    needed_param_names = [interface_param_names...]
+    """
+        collect_needed(added, needed, needed_dict)
+    Collect the names of the needed type parameters starting with `added` and `needed` and going throught the
+    `added` to recursively add the necesary type parameter names from `needed_dict[k]` to `needed` for every `k` in
+    needed.
+    """
+    function collect_needed(added, needed, needed_dict)
+        if isempty(added)
+            return needed
+        else
+            for n in added
+                append!(needed, get(needed_dict, n, []))
+            end
+            new = mapreduce(vcat, added) do n
+                get(needed_dict, n, [])
+            end
+            empty(added)
+        end
+        return collect_needed(new, needed, needed_dict)
+    end
+    needed_param_names = collect_needed(
+        interface_param_names, interface_param_names, where_param_names_dict
+    )
+    for w in where_exps
+        if namify(w) ∈ needed_param_names
+            push!(interface_whereparams_names, w)
+        end
+    end
+
+    return quote
+        $type_exp where {$(interface_whereparams_names...)}
+    end
+end
+
+"""
     @interface fn_expr
 Define an interface function for the abstract type in the first argument of the function signature in `fn_expr`.
 
@@ -114,12 +208,8 @@ macro interface(ex)
 
     interface_arg = MacroTools.splitarg(first(fdict[:args]))
     t, T = interface_arg[[1, 2]]
-    @capture(T, TN_{Ps__} | TN_) # determine the type parameters
-    if !isnothing(Ps)
-        T = quote
-            $T where {$(Ps...)}
-        end
-    end
+
+    T_interface = interfacetype(T, fdict[:whereparams])
 
     if interface_arg[1] === nothing
         t = Symbol(lowercase(first(string(T))))
@@ -128,7 +218,7 @@ macro interface(ex)
 
     signature = string(fcall)
     fdict[:body] = if obligatory
-        :(return throw($UnimplementedInterface{$T,typeof($t)}($signature)))
+        :(return throw($UnimplementedInterface{$T_interface,typeof($t)}($signature)))
     else
         body = fdict[:body]
         logmsg = "Calling default implementation of `" * signature * "`"
@@ -143,10 +233,10 @@ macro interface(ex)
         :block,
         esc(
             quote
-                isabstracttype($T) || throw(
+                isabstracttype($T_interface) || throw(
                     ArgumentError(
                         "In `@interface`, the interfacing type " *
-                        string(nameof($T)) *
+                        string(nameof($T_interface)) *
                         " must be abstract.",
                     ),
                 )

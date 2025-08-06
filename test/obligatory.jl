@@ -89,11 +89,10 @@ struct I14{T} end
 @test length(methods(i17)) == 1
 @test_throws IF.UnimplementedInterface{AbstractArray} i17([1, 2, 3], 5.0)
 
-# @test_broken @expand @interface i18(a::AbstractArray{<:Real}, n::Int)
+@interface i18(a::AbstractArray{<:Real}, n::Int)
+@test length(methods(i18)) == 1
+@test_throws IF.UnimplementedInterface{AbstractArray{T} where {T<:Real}} i18([1, 2, 3], 5)
 
 @interface i19(a::AbstractArray{T}, n::Int) where {T<:Real}
-@test_broken try # Error specialization
-    i19([1, 2, 3], 5)
-catch e
-    e
-end isa (IF.UnimplementedInterface{AbstractArray{T}} where {T<:Real})
+@test length(methods(i19)) == 1
+@test_throws IF.UnimplementedInterface{AbstractArray{T} where {T<:Real}} i19([1, 2, 3], 5)
