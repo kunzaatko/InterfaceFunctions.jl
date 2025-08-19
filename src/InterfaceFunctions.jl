@@ -1,6 +1,7 @@
 # TODO: Allow interfaces for types which are not in the first position <29-07-25> 
 # TODO: Documenter.jl extension to generate an AbstractType tree with the interfaces. It should be a mermaid diagram. It
 # will be used for generating developer documentation. <29-07-25> 
+# TODO: Add a test extension that allows to check that all obligatory interfaces are implemented <08-08-25> 
 
 module InterfaceFunctions
 using MacroTools
@@ -57,6 +58,8 @@ function param_names(type_exp, params=[])
             param_names(p, params)
         end
     elseif @capture(type_exp, T__)
+        # NOTE: Some parameters are non-symbols for example `AbstractArray{T, 2}` and `namify` would not work on those. But also, we do not care about them. <19-08-25> 
+        filter!(Base.Fix2(isa, Symbol), T)
         append!(params, namify.(T))
     else
         return []

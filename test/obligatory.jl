@@ -96,3 +96,7 @@ struct I14{T} end
 @interface i19(a::AbstractArray{T}, n::Int) where {T<:Real}
 @test length(methods(i19)) == 1
 @test_throws IF.UnimplementedInterface{AbstractArray{T} where {T<:Real}} i19([1, 2, 3], 5)
+
+@interface i20(a::AbstractArray{<:Real,1}, n::Int)
+@test length(methods(i20)) == 1
+@test_throws IF.UnimplementedInterface{AbstractArray{T,1} where {T<:Real}} i20([1, 2, 3], 5)
