@@ -18,7 +18,7 @@ makedocs(;
     format=Documenter.HTML(;
         canonical="https://kunzaatko.github.io/InterfaceFunctions.jl",
         edit_link="trunk",
-        assets=String[],
+        assets=["assets/favicon.ico"],
     ),
     pages=[
         "Home" => "index.md",

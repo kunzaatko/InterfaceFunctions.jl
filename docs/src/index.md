@@ -4,7 +4,7 @@ CurrentModule = InterfaceFunctions
 
 # InterfaceFunctions
 
-Documentation for [InterfaceFunctions](https://github.com/kunzaatko/InterfaceFunctions.jl).
+Interfaces for your abstract types with a singe `@interface` makro and minimal "magic"!
 
 ## Features
 
