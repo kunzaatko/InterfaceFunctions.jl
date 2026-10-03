@@ -1,3 +1,8 @@
+# TODO: For the non-first position, there should be a marker syntax such as `@parent(t::AbstractType)` and there should
+# also be trait markers `@trait(t::AbstractTypeTrait)`. This would allow to make a generic implementation such as
+# `fn(t::AbstractType)` = `shine(color(t), t)` and `shine(::IsYellow, t) = "Shine like a diamond!"` where the types that
+# do not implement the trait throw a normal MethodError and the yellow types throw and UnimplementedInterface. Traits
+# should always be concrete types. <28-08-25> 
 # TODO: Allow interfaces for types which are not in the first position <29-07-25> 
 # TODO: Documenter.jl extension to generate an AbstractType tree with the interfaces. It should be a mermaid diagram. It
 # will be used for generating developer documentation. <29-07-25> 
